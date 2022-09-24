@@ -136,5 +136,5 @@ HOST-SUFFIX,blueseacdn.com,Emby
 HOST-SUFFIX,emby.kim,Emby
 HOST-SUFFIX,emby-pub1.blueseacdn.com,Emby
 HOST-SUFFIX,cristiamo.xyz,Emby
-IP-CIDR,161.97.148.156/24,no-resolve,Emby
+IP-CIDR,161.97.148.156/24,Emby
 HOST-SUFFIX,emby.cristiamo.top,Emby
