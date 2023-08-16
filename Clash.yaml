@@ -25,7 +25,6 @@ external-controller: 127.0.0.1:9090
 
 dns:
   enable: true       # 不使用系统 DNS
-  ipv6: false        # 关闭 IPV6
   listen: 0.0.0.0:53 # dns 监听
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
@@ -58,7 +57,7 @@ dns:
 #========= 建立锚点 =========#
 
 # 策略组引用
-pr:   &a3 {type: select,   proxies: [♻️ 自动选择, 🚀 手动切换, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇸🇬 狮城节点, DIRECT] }
+pr:   &a3 {type: select,   proxies: [♻️ 自动选择, 🚀 手动切换,🇸🇬 狮城节点, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇰🇷 韩国节点, 🌍 其他地区, ⚡ 专线节点, DIRECT] }
 p:    &a1 {type: http,     interval: 86400,  health-check: {enable: true, url: http://www.gstatic.com/generate_204, interval: 1800} }
 auto: &a4 {type: url-test, lazy: true,  url: http://www.gstatic.com/generate_204, interval: 900, use: [Subscribe] }
 use:  &a2 {type: select,   use: [Subscribe] }
@@ -78,6 +77,13 @@ proxies: null
 proxy-groups:
 #分流分组
   - {name: 🚀 手动切换, <<: *a2}
+  - {name: 📹 YouTube, <<: *a3}
+  - {name: 👪 DisneyPlus, <<: *a3}
+  - {name: 🍎 AppleTV, <<: *a3}
+  - {name: 🎥 NETFLIX, <<: *a3}
+  - {name: Spotify, <<: *a3}
+  - {name: Emby, <<: *a3}
+  - {name: ❤️‍🔥 Speedtest, <<: *a3}
   - {name: 🌏 全球加速, <<: *a3}
   - {name: 🍎 苹果服务, <<: *a3}
   - {name: 📺 哔哩哔哩, type: select, proxies: [DIRECT, 🇭🇰 香港节点, 🇨🇳 台湾节点]}
@@ -85,22 +91,30 @@ proxy-groups:
   - {name: 🎬 国际媒体, <<: *a3}
   - {name: 🌌 谷歌服务, <<: *a3}
   - {name: 📟 电报消息, <<: *a3}
-  - {name: 🐦 推特服务, <<: *a3}
   - {name: 🎮 游戏平台, <<: *a3}
   - {name: 🆎 AdBlock, type: select, proxies: [REJECT]}
   - {name: 🐟 兜底分流, <<: *a3}
   
 #节点分组
   - {name: ♻️ 自动选择, <<: *a4}
-  - {name: 🇭🇰 香港节点, <<: *a4, filter: "港|HK|(?i)Hong"           }             # a4更改为a2，即为手动选择
-  - {name: 🇯🇵 日本节点, <<:  *a4, filter: "日|东京|JP|(?i)Japan"     }             # a4更改为a2，即为手动选择     
-  - {name: 🇨🇳 台湾节点, <<: *a4, filter: "台|湾|TW|(?i)Taiwan"      }             # a4更改为a2，即为手动选择
-  - {name: 🇺🇲 美国节点, <<: *a4, filter: "美|US|(?i)States|American"}             # a4更改为a2，即为手动选择
-  - {name: 🇸🇬 狮城节点, <<: *a4, filter: "新|坡|SG|(?i)Singapore"    }            # a4更改为a2，即为手动选择
+  - {name: 🇭🇰 香港节点, <<: *a2, filter: "港|HK|(?i)Hong"           }             # a4更改为a2，即为手动选择
+  - {name: 🇸🇬 狮城节点, <<: *a2, filter: "新|坡|SG|(?i)Singapore"    }            # a4更改为a2，即为手动选择
+  - {name: 🇯🇵 日本节点, <<:  *a2, filter: "日|东京|JP|(?i)Japan"     }             # a4更改为a2，即为手动选择     
+  - {name: 🇨🇳 台湾节点, <<: *a2, filter: "台|湾|TW|(?i)Taiwan"      }             # a4更改为a2，即为手动选择
+  - {name: 🇺🇲 美国节点, <<: *a2, filter: "美|US|(?i)States|American"}             # a4更改为a2，即为手动选择
+  - {name: 🇰🇷 韩国节点, <<: *a2, filter: "KR|Korea|KOR|首尔|韩国|韓"}             # a4更改为a2，即为手动选择
+  - {name: 🌍 其他地区, <<: *a2, filter: "俄|印|德|英|土|阿|拿|菲|澳|巴|马|迪|尼|卢|墨|西|乌|挪威|荷|法|蒙|emby|Emby|意|波兰|CA|爱尔兰|埃及|泰|越|瑞"    }            # a4更改为a2，即为手动选择
+  - {name: ⚡ 专线节点, <<: *a2, filter: "AGA|aga|BGP|bgp|IEPL|iepl|IPLC|iplc|Anycast|anycast|AIA|pccw|5x|10x|X10|X8|X5|x3|5x"    }            # a4更改为a2，即为手动选择
 
 # 分流规则 
 rule-providers:
-  AppleTV+:    {<<: *a5, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AppleTV/AppleTV.yaml,              path: ./ruleset/AppleTV.yaml      }
+  YouTube:     {<<: *a5, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube.yaml,              path: ./ruleset/YouTube.yaml      }
+  NETFLIX:     {<<: *a5, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Netflix/Netflix.yaml,              path: ./ruleset/Netflix.yaml      }
+  Syncnext:    {<<: *a5, url: https://raw.githubusercontent.com/qoli/SyncnextClash/main/proxy-classical.yaml,                                     path: ./ruleset/Syncnext.yaml     }
+  DisneyPlus:  {<<: *a5, url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/DisneyPlus.yaml,                             path: ./ruleset/DisneyPlus.yaml   }
+  Emby:        {<<: *a5, url: https://raw.githubusercontent.com/KEleven77/webcdn/main/rule/list/Emby.yaml,                                        path: ./ruleset/Emby.yaml         }
+  Spotify:     {<<: *a5, url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Spotify.yaml,                                path: ./ruleset/Spotify.yaml      }
+  AppleTV:    {<<: *a5, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AppleTV/AppleTV.yaml,              path: ./ruleset/AppleTV.yaml      }
   Direct:      {<<: *a5, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Direct/Direct.yaml,                      path: ./ruleset/Direct.yaml       }
   Lan:         {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Lan/Lan.yaml,                            path: ./ruleset/Lan.yaml          }
   Download:    {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Download/Download.yaml,                  path: ./ruleset/Download.yaml     }
@@ -109,36 +123,48 @@ rule-providers:
   BiliBili:    {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/BiliBili/BiliBili.yaml,                  path: ./ruleset/BiliBili.yaml     } 
   GlobalMedia: {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GlobalMedia/GlobalMedia_Classical.yaml,  path: ./ruleset/GlobalMedia.yaml  }
   Apple:       {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Apple/Apple_Classical.yaml,              path: ./ruleset/Apple.yaml        }
+  Speedtest:   {<<: *a6, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Speedtest/Speedtest.list,          path: ./ruleset/Speedtest.yaml    }
   Github:      {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub.yaml,                      path: ./ruleset/Github.yaml       }
   Microsoft:   {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Microsoft/Microsoft.yaml,                path: ./ruleset/Microsoft.yaml    }
   Google:      {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.yaml,                      path: ./ruleset/Google.yaml       }
   Telegram:    {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Telegram/Telegram.yaml,                  path: ./ruleset/Telegram.yaml     }
-  Twitter:     {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitter/Twitter.yaml,                    path: ./ruleset/Twitter.yaml      }
   Game:        {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Game/Game.yaml,                          path: ./ruleset/Game.yaml         }
+  GameDownload: {<<: *a6, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/GameDownload/GameDownload.yaml,     path: ./ruleset/GameDownload.yaml         }
   ChinaIP:     {<<: *a7, url: https://cdn.jsdelivr.net/gh/soffchen/GeoIP2-CN@release/clash-rule-provider.yml,                                     path: ./ruleset/ChinaIP.yaml      }
-  ChinaIP:     {<<: *a7, url: https://raw.githubusercontent.com/VirgilClyne/GetSomeFries/main/ruleset/ASN.China.yaml,                             path: ./ruleset/ChinaIP.yaml      }
+  ASN:         {<<: *a7, url: https://raw.githubusercontent.com/VirgilClyne/GetSomeFries/main/ruleset/ASN.China.yaml,                             path: ./ruleset/ASN.yaml          }
+  Global:      {<<: *a7, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Global/Global.list,                path: ./ruleset/Global.yaml       }
   ProxyLite:   {<<: *a6, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ProxyLite/ProxyLite.yaml,                path: ./ruleset/ProxyLite.yaml    }
   
  # 分流Policy 
 rules:
   - RULE-SET,Direct,DIRECT
+  - RULE-SET,ASN,DIRECT
   - RULE-SET,Lan,DIRECT
   - RULE-SET,Download,DIRECT
   - RULE-SET,Ad,🆎 AdBlock
+  - RULE-SET,ChinaIP,DIRECT
+  - RULE-SET,GameDownload,DIRECT
+  - GEOIP,CN,DIRECT
   - RULE-SET,OpenAi,🤖 OpenAi
   - RULE-SET,BiliBili,📺 哔哩哔哩
-  - RULE-SET,Bahamut,📺 哔哩哔哩
-  - RULE-SET,GlobalMedia,🎬 国际媒体
   - RULE-SET,Apple,🍎 苹果服务
+  - RULE-SET,YouTube,📹 YouTube
+  - RULE-SET,NETFLIX,🎥 NETFLIX
+  - RULE-SET,AppleTV,🍎 AppleTV
+  - RULE-SET,Emby,Emby
+  - RULE-SET,DisneyPlus,👪 DisneyPlus
+  - RULE-SET,Spotify,Spotify
+  - RULE-SET,Speedtest,❤️‍🔥 Speedtest
+  - RULE-SET,GlobalMedia,🎬 国际媒体
   - RULE-SET,Github,🌏 全球加速
+  - RULE-SET,Syncnext,🌏 全球加速
   - RULE-SET,Microsoft, 🌏 全球加速
   - RULE-SET,Google,🌌 谷歌服务
   - RULE-SET,Telegram,📟 电报消息
   - RULE-SET,Twitter,🌏 全球加速
+  - RULE-SET,Global,🌏 全球加速
   - RULE-SET,Game,🎮 游戏平台
   - RULE-SET,ProxyLite,🌏 全球加速
-  - RULE-SET,ChinaIP,DIRECT
-  - GEOIP,CN,DIRECT
   - MATCH,🐟 兜底分流
 
 
